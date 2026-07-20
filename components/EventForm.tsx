@@ -60,7 +60,7 @@ interface EventFormProps {
 function EventForm({ mode, initialData }: EventFormProps) {
   const { user } = useUser();
   const createEvent = useMutation(api.events.create);
-  const updateEvent = useMutation(api.events.updateEvent);
+  const updateEvent = useMutation(api.events.update);
   const router = useRouter();
   const [isPending, startTransition] = React.useTransition();
   const currentImageUrl = useStorageUrl(initialData?.imageStorageId);

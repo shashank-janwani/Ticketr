@@ -1,33 +1,30 @@
-"use server"
+"use server";
 
 import { api } from "@/convex/_generated/api";
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
-import { AArrowDown } from "lucide-react";
 
-if(!process.env.NEXT_PUBLIC_CONVEX_URL) {
-    throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
-
+if (!process.env.NEXT_PUBLIC_CONVEX_URL) {
+  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
 }
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL) ;
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
 export async function getStripeConnectAccount() {
-    const { userId } = await auth()
+  const { userId } = await auth();
 
-    if(!userId) {
-        throw new Error("Not Authenticated");
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
 
+  const stripeConnectId = await convex.query(
+    api.users.getUsersStripeConnectId,
+    {
+      userId,
     }
+  );
 
-    const stripeConnectId = await convex.query(
-        api.users.getUsersStripeConnectId,
-        {
-            userId
-      }
-    );
-
-    return{
-        stripeConnectId: stripeConnectId || null,
-    };
+  return {
+    stripeConnectId: stripeConnectId || null,
+  };
 }

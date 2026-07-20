@@ -243,7 +243,7 @@ function EventCard({ eventId } : { eventId: Id<"events"> }) {
 
             <span>
               {availableTickets.totalTickets - availableTickets.PurchasedTickets} / 
-              {availableTickets.totalTickets}available
+              {availableTickets.totalTickets} available
               {!isPastEvent && availableTickets.activeOffers > 0 && (
                 <span className="text-amber-600 text-sm ml-2">
                   ({availableTickets.activeOffers} {""}

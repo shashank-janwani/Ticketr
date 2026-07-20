@@ -23,34 +23,38 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-    console.log("===============");
-console.log("EVENT TYPE:", event.type);
-console.log("EVENT ACCOUNT:", event.account);
-console.log("EVENT ID:", event.id);
-console.log("===============");
     console.log("Webhook event constructed successfully:", event.type);
-  } catch (err) {
-    console.error("Webhook construction failed:", err);
-    return new Response(`Webhook Error: ${(err as Error).message}`, {
-      status: 400,
-    });
+  } catch (error) {
+  console.error("🔥 Full webhook error:", error);
+
+  if (error instanceof Error) {
+    console.error("Message:", error.message);
+    console.error("Stack:", error.stack);
   }
 
+  return new Response(
+    JSON.stringify({
+      error: error instanceof Error ? error.message : String(error),
+    }),
+    { status: 500 }
+  );
+}
+
   const convex = getConvexClient();
-console.log("Is checkout session?",
-  event.type === "checkout.session.completed");
+
   if (event.type === "checkout.session.completed") {
-  console.log("Event account:", event.account);
 
-    const session = event.data.object as Stripe.Checkout.Session;
-      console.log("FULL SESSION");
-  console.log(JSON.stringify(session, null, 2));
-
-  console.log("SESSION METADATA");
-  console.log(session.metadata);
-      
+    
+      console.log("Processing checkout.session.completed");
+      const session = event.data.object as Stripe.Checkout.Session;
+      console.log("Full session:", JSON.stringify(session, null, 2));
     const metadata = session.metadata as StripeCheckoutMetaData;
     
+
+console.log("Full session:", JSON.stringify(session, null, 2));
+console.log("Session metadata:", session.metadata);
+    console.log("Convex client:", convex);
+
     try {
       const result = await convex.mutation(api.events.purchaseTicket, {
         eventId: metadata.eventId,
